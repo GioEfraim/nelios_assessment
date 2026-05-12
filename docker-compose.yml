@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nelios_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - nelios_network
+
+  wordpress:
+    image: wordpress:latest
+    container_name: nelios_wordpress
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/plugins/nelios-items:/var/www/html/wp-content/plugins/nelios-items
+    networks:
+      - nelios_network
+
+  nextjs:
+    build:
+      context: ./nextjs
+      dockerfile: Dockerfile
+    container_name: nelios_nextjs
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      WORDPRESS_API_URL: ${WORDPRESS_API_URL}
+    depends_on:
+      - wordpress
+    networks:
+      - nelios_network
+    # Live reload: your ./nextjs files are mounted into the container (no rebuild per edit).
+    # node_modules live in a named volume so Linux deps stay correct (don’t use host Windows node_modules).
+    volumes:
+      - ./nextjs:/app
+      - nextjs_node_modules:/app/node_modules
+    command: ["sh", "-c", "if [ ! -f node_modules/.bin/next ]; then npm ci; fi && exec npx next dev --webpack -H 0.0.0.0 -p 3000"]
+
+volumes:
+  mysql_data:
+  wordpress_data:
+  nextjs_node_modules:
+
+networks:
+  nelios_network:
+    driver: bridge
