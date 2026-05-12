@@ -1,14 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import Image from 'next/image';
+import { useRef, useState } from 'react';
+import { useTravelSearch } from './TravelSearchContext';
+import searchIcon from '@/assets/search.png';
 
 export default function Header() {
-  // Tabs are visual only for now — not wired to WP / listing filters yet.
+  // Package-type tabs: local UI state only (filters live in ItemsSection).
   const [mode, setMode] = useState<'excursions' | 'hotels'>('excursions');
+  const { checkInDate, setCheckInDate, checkOutDate, setCheckOutDate, guests, setGuests } =
+    useTravelSearch();
+  const [guestsEditing, setGuestsEditing] = useState(false);
+
+  const checkInRef = useRef<HTMLInputElement>(null);
+  const checkOutRef = useRef<HTMLInputElement>(null);
+  const guestsRef = useRef<HTMLInputElement>(null);
+
+  const openDatePicker = (ref: { current: HTMLInputElement | null }) => {
+    const input = ref.current;
+    if (!input) return;
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+    input.focus();
+  };
 
   return (
     <header
-      className="relative z-[1] w-full overflow-x-hidden pb-10"
+      className="relative z-[1] w-full overflow-x-hidden pb-6 md:pb-10"
       style={{
         background:
           'radial-gradient(ellipse 95% 70% at 50% -5%, #e0f2f7 0%, #eef6f9 35%, #f5f5f5 72%, #f5f5f5 100%)',
@@ -29,18 +49,13 @@ export default function Header() {
           <span className="text-nelios-gray">Πακέτα</span>
         </nav>
 
-        <h1 className="nelios-h2 text-nelios-black">ΕΛΛΑΔΑ</h1>
+        <h1 className="nelios-h2 text-nelios-black pt-6">ΕΛΛΑΔΑ</h1>
         <p className="nelios-text-14 mt-2 text-nelios-gray">Πακέτα - Προσφορές</p>
       </div>
 
-      {/* Search block: pill tabs sit half-outside the card (overlap top edge) */}
-      <div className="relative mx-auto mt-12 max-w-4xl px-4">
-        {/* Segmented control — white outer pill; active = inner white pill + shadow + green text (Figma ref) */}
-        <div
-          className="absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-[42%]"
-          role="tablist"
-          aria-label="Package type"
-        >
+      {/* Search: desktop only — mobile uses the strip in ItemsSection */}
+      <div className="relative mx-auto mt-12 hidden max-w-4xl flex-col items-center gap-3 px-4 md:flex">
+        <div className="relative z-20 flex justify-center" role="tablist" aria-label="Package type">
           <div
             className="inline-flex items-center gap-1 rounded-full border bg-nelios-white p-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.08)]"
             style={{ borderColor: 'rgba(0, 0, 0, 0.06)' }}
@@ -90,69 +105,138 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Card sits under the tabs; top padding clears the overlapping pill */}
         <div
-          className="relative z-10 rounded-[10px] border bg-nelios-white pt-10 shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
+          className="relative z-10 w-full rounded-[10px] border bg-nelios-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
           style={{ borderColor: 'var(--nelios-field-border)' }}
         >
           <div className="flex flex-wrap items-stretch">
             <div
-              className="flex min-w-[140px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:border-r"
+              className="relative flex min-w-[140px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:pr-6 after:hidden md:after:block after:absolute after:right-0 after:top-3 after:bottom-3 after:w-px after:bg-nelios-stroke"
               style={{ borderColor: 'var(--nelios-stroke)' }}
             >
               <span className="nelios-small-12 text-nelios-gray">Προορισμός</span>
               <span className="nelios-menu-item text-nelios-black">Ελλάδα</span>
             </div>
+
             <div
-              className="flex min-w-[120px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:border-r"
+              className="relative flex min-w-[120px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:pr-6 after:hidden md:after:block after:absolute after:right-0 after:top-3 after:bottom-3 after:w-px after:bg-nelios-stroke"
               style={{ borderColor: 'var(--nelios-stroke)' }}
             >
-              <label className="nelios-small-12 text-nelios-gray" htmlFor="check-in">
-                Check In
-              </label>
-              <input
-                id="check-in"
-                type="date"
-                className="nelios-field-14 mt-0.5 w-full min-h-[1.25rem] border-0 bg-transparent p-0 text-nelios-black outline-none"
-              />
+              <div
+                className="relative flex min-h-[2.2rem] flex-col justify-center cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onClick={() => openDatePicker(checkInRef)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openDatePicker(checkInRef);
+                  }
+                }}
+              >
+                {checkInDate ? (
+                  <>
+                    <span className="nelios-small-12 text-nelios-gray">Check In</span>
+                    <span className="nelios-field-14 mt-0.5 text-nelios-black">{checkInDate}</span>
+                  </>
+                ) : (
+                  <span className="nelios-field-14 text-nelios-gray">Check in</span>
+                )}
+                <input
+                  ref={checkInRef}
+                  id="check-in"
+                  type="date"
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="pointer-events-none absolute h-0 w-0 opacity-0"
+                />
+              </div>
             </div>
+
             <div
-              className="flex min-w-[120px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:border-r"
+              className="relative flex min-w-[120px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:pr-6 after:hidden md:after:block after:absolute after:right-0 after:top-3 after:bottom-3 after:w-px after:bg-nelios-stroke"
               style={{ borderColor: 'var(--nelios-stroke)' }}
             >
-              <label className="nelios-small-12 text-nelios-gray" htmlFor="check-out">
-                Check Out
-              </label>
-              <input
-                id="check-out"
-                type="date"
-                className="nelios-field-14 mt-0.5 w-full min-h-[1.25rem] border-0 bg-transparent p-0 text-nelios-black outline-none"
-              />
+              <div
+                className="relative flex min-h-[2.2rem] flex-col justify-center cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onClick={() => openDatePicker(checkOutRef)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openDatePicker(checkOutRef);
+                  }
+                }}
+              >
+                {checkOutDate ? (
+                  <>
+                    <span className="nelios-small-12 text-nelios-gray">Check Out</span>
+                    <span className="nelios-field-14 mt-0.5 text-nelios-black">{checkOutDate}</span>
+                  </>
+                ) : (
+                  <span className="nelios-field-14 text-nelios-gray">Check out</span>
+                )}
+                <input
+                  ref={checkOutRef}
+                  id="check-out"
+                  type="date"
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="pointer-events-none absolute h-0 w-0 opacity-0"
+                />
+              </div>
             </div>
+
             <div
-              className="flex min-w-[100px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0 md:border-r"
+              className="flex min-w-[100px] flex-1 flex-col justify-center border-b px-4 py-3.5 md:border-b-0"
               style={{ borderColor: 'var(--nelios-stroke)' }}
             >
-              <label className="nelios-small-12 text-nelios-gray" htmlFor="guests">
-                Αριθμός ατόμων
-              </label>
-              <input
-                id="guests"
-                type="number"
-                min={1}
-                defaultValue={2}
-                className="nelios-field-14 mt-0.5 w-16 border-0 bg-transparent p-0 text-nelios-black outline-none"
-              />
+              <div
+                className="relative flex min-h-[2.2rem] flex-col justify-center cursor-text"
+                onClick={() => {
+                  if (!guestsEditing) setGuestsEditing(true);
+                  setTimeout(() => guestsRef.current?.focus(), 0);
+                }}
+              >
+                {guests || guestsEditing ? (
+                  <>
+                    <label className="nelios-small-12 text-nelios-gray" htmlFor="guests">
+                      Αριθμός ατόμων
+                    </label>
+                    <input
+                      ref={guestsRef}
+                      id="guests"
+                      type="number"
+                      min={1}
+                      value={guests}
+                      onChange={(e) => setGuests(e.target.value)}
+                      onBlur={() => {
+                        if (!guests) setGuestsEditing(false);
+                      }}
+                      placeholder=""
+                      className="nelios-field-14 mt-0.5 w-full border-0 bg-transparent p-0 text-nelios-black outline-none"
+                    />
+                  </>
+                ) : (
+                  <span className="nelios-field-14 text-nelios-gray">Αριθμός ατόμων</span>
+                )}
+              </div>
             </div>
+
             <div
-              className="flex min-w-[140px] flex-1 items-center justify-center border-t p-3 md:border-t-0 md:border-l"
+              className="flex min-w-[140px] flex-1 items-center justify-center border-t md:border-t-0"
               style={{ borderColor: 'var(--nelios-stroke)' }}
             >
-              <button type="button" className="nelios-btn-primary w-full max-w-[220px] px-5 py-2.5 md:w-auto">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
-                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-                  <path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+              <button type="button" className="nelios-btn-primary w-full max-w-[220px] px-5 py-3 md:w-auto">
+                <Image
+                  src={searchIcon}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="block shrink-0"
+                  aria-hidden
+                />
                 Αναζήτηση
               </button>
             </div>

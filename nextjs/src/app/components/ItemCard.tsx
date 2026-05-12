@@ -17,11 +17,11 @@ export default function ItemCard({ item }: Props) {
 
   return (
     <article
-      className="flex h-full flex-col overflow-hidden rounded-[10px] border bg-nelios-white transition-shadow duration-200 hover:shadow-md"
+      className="mx-auto flex h-[479px] w-[312px] max-w-full flex-col overflow-hidden rounded-[12px] border bg-[rgba(255,255,255,0.88)] shadow-[0px_24px_32px_-12px_#0000001A] backdrop-blur-[32px] transition-shadow duration-200"
       style={{ borderColor: 'var(--nelios-stroke)' }}
     >
-      {/* Featured image from REST (`featured_image_url` comes from the small WP plugin filter) */}
-      <div className="relative h-48 w-full shrink-0">
+      {/* Featured image — 312 wide; 275px tall so details can fit 3-line title (275+204=479) */}
+      <div className="relative h-[275px] w-full max-w-[312px] shrink-0 overflow-hidden rounded-t-[12px]">
         {featured_image_url ? (
           <img
             src={featured_image_url}
@@ -38,13 +38,18 @@ export default function ItemCard({ item }: Props) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-4">
-        {/* Meta: duration / title / price / booking CTA */}
-        <p className="nelios-small-12 mb-1 text-nelios-gray">{duration}</p>
+      {/* Details — padding 20/24/24/24, gap 8px; 204px height for 3-line title + price row */}
+      <div className="box-border flex h-[204px] w-full max-w-[312px] shrink-0 flex-col gap-2 pt-5 px-6 pb-6">
+        <p className="nelios-small-12 shrink-0 text-nelios-gray">{duration}</p>
 
-        <h3 className="nelios-h7 mb-3 min-h-[3.4rem] line-clamp-2 leading-snug text-nelios-black">{titlePlain}</h3>
+        <h3
+          className="nelios-h7 min-h-0 flex-1 break-words pb-1 text-nelios-black line-clamp-3 [overflow-wrap:anywhere]"
+          style={{ lineHeight: 1.45 }}
+        >
+          {titlePlain}
+        </h3>
 
-        <div className="mt-auto flex items-center justify-between gap-2">
+        <div className="flex shrink-0 items-center justify-between gap-2">
           <div>
             <span className="nelios-small-12 uppercase text-nelios-gray">από </span>
             <span className="nelios-text-16-bold text-nelios-black">{meta.price}€</span>

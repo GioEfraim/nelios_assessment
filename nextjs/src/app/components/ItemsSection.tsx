@@ -1,10 +1,14 @@
 'use client';
 
+import Image from 'next/image';
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import ItemCard from './ItemCard';
 import Filters from './Filters';
 import FilterSheet from './FilterSheet';
+import { formatDateDdMmYyyy, useTravelSearch } from './TravelSearchContext';
 import { WPItem } from '@/lib/wordpress';
+import editIcon from '@/assets/icon.png';
+import filterIcon from '@/assets/filter.png';
 
 interface Props {
   initialItems: WPItem[];
@@ -28,21 +32,37 @@ function buildHistogram(prices: number[], bucketCount: number, max: number): num
 
 function FilterIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
-      <path
-        d="M4 5h16M4 12h10M4 19h7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="18" cy="5" r="2" fill="currentColor" />
-      <circle cx="14" cy="12" r="2" fill="currentColor" />
-      <circle cx="11" cy="19" r="2" fill="currentColor" />
-    </svg>
+    <Image
+      src={filterIcon}
+      alt=""
+      width={13}
+      height={13}
+      className="block shrink-0"
+      aria-hidden
+    />
   );
 }
 
 export default function ItemsSection({ initialItems }: Props) {
+  const { checkInDate, checkOutDate, guests } = useTravelSearch();
+
+  const mobileTravelSummary = useMemo(() => {
+    const inFmt = formatDateDdMmYyyy(checkInDate);
+    const outFmt = formatDateDdMmYyyy(checkOutDate);
+    const chunks: string[] = [];
+
+    if (inFmt && outFmt) chunks.push(`${inFmt} - ${outFmt}`);
+    else if (inFmt) chunks.push(inFmt);
+    else if (outFmt) chunks.push(outFmt);
+
+    const n = parseInt(guests, 10);
+    if (Number.isFinite(n) && n >= 1) {
+      chunks.push(`${n} ${n === 1 ? 'Ενήλικας' : 'Ενήλικες'}`);
+    }
+
+    return chunks.join(' • ');
+  }, [checkInDate, checkOutDate, guests]);
+
   // Slider upper bound + histogram both scale with the dataset (capped so it stays sensible).
   const { sliderMax, histogram } = useMemo(() => {
     const prices = initialItems.map((i) => Number(i.meta?.price) || 0);
@@ -83,6 +103,20 @@ export default function ItemsSection({ initialItems }: Props) {
     setSheetOpen(false);
   }, [draftMin, draftMax, draftStars, draftNights]);
 
+  const resetAppliedFilters = useCallback(() => {
+    setSelectedMin(0);
+    setSelectedMax(sliderMax);
+    setSelectedStars([]);
+    setSelectedNights([]);
+  }, [sliderMax]);
+
+  const resetDraftFilters = useCallback(() => {
+    setDraftMin(0);
+    setDraftMax(sliderMax);
+    setDraftStars([]);
+    setDraftNights([]);
+  }, [sliderMax]);
+
   const handleStarsChange = (star: number) => {
     setSelectedStars((prev) =>
       prev.includes(star) ? prev.filter((s) => s !== star) : [...prev, star]
@@ -122,7 +156,7 @@ export default function ItemsSection({ initialItems }: Props) {
       .sort((a, b) => {
         if (sortBy === 'price_asc') return (Number(a.meta?.price) || 0) - (Number(b.meta?.price) || 0);
         if (sortBy === 'price_desc') return (Number(b.meta?.price) || 0) - (Number(a.meta?.price) || 0);
-        // “Popular” isn’t in the API — we fake it with newer post id first (good enough for a demo).
+        // No popularity metric in REST — “Δημοφιλή” uses newer posts first (by id).
         if (sortBy === 'popular') return b.id - a.id;
         return 0;
       });
@@ -141,26 +175,26 @@ export default function ItemsSection({ initialItems }: Props) {
     <div className="relative z-[1] max-w-6xl mx-auto px-4 py-6">
       {/* Mobile-only summary strip (matches the Figma results screen) */}
       <div
-        className="mb-4 flex md:hidden items-center justify-between gap-3 rounded-[10px] border bg-nelios-white px-4 py-3"
+        className="mb-4 flex md:hidden items-center justify-between gap-3 rounded-full border bg-nelios-white px-4 py-3"
         style={{ borderColor: 'var(--nelios-field-border)' }}
       >
         <div className="min-w-0 flex-1">
           <p className="nelios-menu-item truncate text-nelios-black">ΕΛΛΑΔΑ</p>
-          <p className="nelios-small-12 mt-0.5 text-nelios-gray">Πακέτα · επιλέξτε ημερομηνίες στο header</p>
+          <p className="nelios-small-12 mt-0.5 truncate text-nelios-gray">{mobileTravelSummary}</p>
         </div>
         <button
           type="button"
           className="shrink-0 rounded-md p-2 text-nelios-accent-green hover:bg-nelios-background"
           aria-label="Επεξεργασία αναζήτησης"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path
-              d="M4 21h4l11-11-4-4L4 17v4zM13 6l4 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
+          <Image
+            src={editIcon}
+            alt=""
+            width={16}
+            height={16}
+            className="block shrink-0"
+            aria-hidden
+          />
         </button>
       </div>
 
@@ -181,16 +215,17 @@ export default function ItemsSection({ initialItems }: Props) {
             selectedNights={selectedNights}
             onNightsChange={handleNightsChange}
             showMainTitle
+            onResetAll={resetAppliedFilters}
           />
         </aside>
 
         <div className="min-w-0 md:col-start-2 md:row-start-1">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="nelios-text-14 text-nelios-black">
+          <div className="flex w-full min-w-0 flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between">
+            <p className="nelios-text-14 text-center text-nelios-black md:min-w-0 md:text-left">
               <span className="text-nelios-pure-black">{filteredItems.length}</span> διαθέσιμα πακέτα διακοπών
             </p>
-            <div className="flex items-center gap-2">
-              <div className="md:hidden">
+            <div className="flex w-full min-w-0 items-center justify-between gap-2 md:w-auto md:shrink-0 md:justify-end">
+              <div className="shrink-0 md:hidden">
                 <button type="button" onClick={openSheet} className="nelios-btn-outline">
                   <FilterIcon />
                   Φίλτρα
@@ -199,7 +234,7 @@ export default function ItemsSection({ initialItems }: Props) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="nelios-field-14 cursor-pointer rounded-md border bg-nelios-white px-3 py-2 text-nelios-black outline-none focus:ring-2 focus:ring-[var(--nelios-accent-blue)]"
+                className="nelios-select-chevron nelios-field-14 box-border h-[42px] w-[200px] shrink-0 cursor-pointer rounded-md border bg-nelios-white py-2 pl-3 pr-9 text-nelios-black outline-none focus:ring-2 focus:ring-[var(--nelios-accent-blue)] md:h-auto md:w-auto md:min-w-[12rem]"
                 style={{ borderColor: 'var(--nelios-field-border)' }}
               >
                 <option value="popular">Δημοφιλή</option>
@@ -248,6 +283,7 @@ export default function ItemsSection({ initialItems }: Props) {
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
         onApply={applySheet}
+        onResetAll={resetDraftFilters}
       >
         <Filters
           formId="sheet"

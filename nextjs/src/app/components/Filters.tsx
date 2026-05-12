@@ -24,6 +24,8 @@ type Props = {
   /** Hide the big “ΦΙΛΤΡΑ” heading when the sheet already shows it in the header */
   showMainTitle?: boolean;
   formId: string;
+  /** Clear price range, stars, nights (parent owns state) */
+  onResetAll?: () => void;
 };
 
 // Desktop sidebar + mobile bottom sheet; `formId` keeps the two radio groups from colliding.
@@ -41,6 +43,7 @@ export default function Filters({
   onNightsChange,
   showMainTitle = true,
   formId,
+  onResetAll,
 }: Props) {
   return (
     <div
@@ -48,9 +51,21 @@ export default function Filters({
       style={{ boxShadow: '0 1px 3px var(--nelios-stroke)' }}
     >
       {showMainTitle && (
-        <h2 className="nelios-h7 text-nelios-black mb-5 border-b pb-3" style={{ borderColor: 'var(--nelios-stroke)' }}>
-          ΦΙΛΤΡΑ
-        </h2>
+        <div
+          className="mb-5 flex items-center justify-between gap-3 border-b pb-3"
+          style={{ borderColor: 'var(--nelios-stroke)' }}
+        >
+          <h2 className="nelios-h7 text-nelios-black">ΦΙΛΤΡΑ</h2>
+          {onResetAll ? (
+            <button
+              type="button"
+              onClick={onResetAll}
+              className="nelios-small-12 shrink-0 cursor-pointer font-bold uppercase tracking-wide text-red-600 underline-offset-2 transition-colors hover:text-red-700 hover:underline"
+            >
+              Επαναφορά
+            </button>
+          ) : null}
+        </div>
       )}
 
       {/* --- Price --- */}
@@ -119,8 +134,12 @@ export default function Filters({
         ))}
       </div>
 
-      {/* --- Hotel category (stars) — Figma calls this block “ΦΙΛΤΡΟ” --- */}
-      <p className="nelios-h7 mb-3 text-nelios-black">ΦΙΛΤΡΟ</p>
+      {/* --- Hotel category (stars) --- */}
+      <hr
+        className="mx-auto mb-3 w-[78%] max-w-[220px] border-0 border-t border-solid border-nelios-stroke"
+        aria-hidden
+      />
+      <p className="nelios-h7 mb-3 text-nelios-black">ΑΣΤΕΡΙΑ</p>
       <div className="mb-6 space-y-2">
         {[3, 4, 5].map((star) => (
           <label key={star} className="flex cursor-pointer items-center gap-2">
@@ -136,7 +155,11 @@ export default function Filters({
       </div>
 
       {/* --- Trip length (nights) --- */}
-      <p className="nelios-h7 mb-3 text-nelios-black">ΦΙΛΤΡΟ</p>
+      <hr
+        className="mx-auto mb-3 w-[78%] max-w-[220px] border-0 border-t border-solid border-nelios-stroke"
+        aria-hidden
+      />
+      <p className="nelios-h7 mb-3 text-nelios-black">ΝΥΧΤΕΣ</p>
       <div className="space-y-2">
         {[1, 2, 3, 4].map((night) => (
           <label key={night} className="flex cursor-pointer items-center gap-2">

@@ -7,9 +7,11 @@ type Props = {
   onClose: () => void;
   onApply: () => void;
   children: React.ReactNode;
+  /** Reset draft filters (shown next to ΦΙΛΤΡΑ, before close) */
+  onResetAll?: () => void;
 };
 
-export default function FilterSheet({ open, onClose, onApply, children }: Props) {
+export default function FilterSheet({ open, onClose, onApply, children, onResetAll }: Props) {
   if (!open) return null;
 
   return (
@@ -28,21 +30,32 @@ export default function FilterSheet({ open, onClose, onApply, children }: Props)
       />
       <div className="relative z-10 mt-auto flex max-h-[92vh] min-h-[50vh] flex-col rounded-t-2xl bg-nelios-white shadow-[0_-8px_32px_rgba(0,0,0,0.12)]">
         <div
-          className="flex shrink-0 items-center justify-between border-b px-4 py-4"
+          className="flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4"
           style={{ borderColor: 'var(--nelios-stroke)' }}
         >
-          <h2 id="filter-sheet-title" className="nelios-h7 text-nelios-black">
+          <h2 id="filter-sheet-title" className="nelios-h7 min-w-0 truncate text-nelios-black">
             ΦΙΛΤΡΑ
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 text-nelios-black transition-colors hover:bg-nelios-background"
-            style={{ borderColor: 'var(--nelios-field-border)' }}
-            aria-label="Κλείσιμο"
-          >
-            <span className="nelios-text-16 leading-none">✕</span>
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            {onResetAll ? (
+              <button
+                type="button"
+                onClick={onResetAll}
+                className="nelios-small-12 cursor-pointer font-bold uppercase tracking-wide text-red-600 underline-offset-2 transition-colors hover:text-red-700 hover:underline"
+              >
+                Επαναφορά
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-10 w-10 items-center justify-center rounded-full border-2 text-nelios-black transition-colors hover:bg-nelios-background"
+              style={{ borderColor: 'var(--nelios-field-border)' }}
+              aria-label="Κλείσιμο"
+            >
+              <span className="nelios-text-16 leading-none">✕</span>
+            </button>
+          </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           {children}

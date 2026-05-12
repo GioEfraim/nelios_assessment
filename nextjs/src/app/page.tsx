@@ -1,4 +1,5 @@
 import Header from './components/Header';
+import HomeSearchShell from './components/HomeSearchShell';
 import ItemsSection from './components/ItemsSection';
 import FooterCta from './components/FooterCta';
 import { getFooterCta, WPItem } from '@/lib/wordpress';
@@ -33,10 +34,12 @@ export default async function Home() {
 
   return (
     <main className="relative min-h-screen bg-nelios-background">
-      {/* Top: hero + search bar (Figma) */}
-      <Header />
-      {/* Below: filters + package cards */}
-      <ItemsSection initialItems={items} />
+      <HomeSearchShell>
+        {/* Top: hero + search bar (Figma) — dates/guests shared with mobile strip */}
+        <Header />
+        {/* Below: filters + package cards */}
+        <ItemsSection initialItems={items} />
+      </HomeSearchShell>
       {footerCta ? <FooterCta data={footerCta} /> : null}
     </main>
   );

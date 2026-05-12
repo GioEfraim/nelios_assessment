@@ -32,6 +32,32 @@
   --font-sans: var(--font-roboto-flex), system-ui, sans-serif;
 }
 
+/* Hide number-input spinners (guests field in header) */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* Native <select>: OS chevron sits flush to the edge — custom chevron asset */
+select.nelios-select-chevron {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('../assets/chevron-down.png');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+}
+select.nelios-select-chevron::-ms-expand {
+  display: none;
+}
+
 body {
   background: var(--nelios-background);
   color: var(--nelios-black);
@@ -137,7 +163,7 @@ body {
   font-size: 0.875rem;
   line-height: 1rem;
   font-weight: 700;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
