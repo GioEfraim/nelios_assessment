@@ -12,6 +12,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+      # Auto-import WP database on first boot (only runs when mysql_data is empty).
+      - ./wordpress/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
     networks:
       - nelios_network
 
@@ -31,6 +33,8 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress/plugins/nelios-items:/var/www/html/wp-content/plugins/nelios-items
+      # Ship media with the repo so images survive `down -v` and are available on first boot.
+      - ./wordpress/uploads:/var/www/html/wp-content/uploads
     networks:
       - nelios_network
 
