@@ -1,7 +1,7 @@
 # Nelios assessment — WP + Next.js (Docker)
 
-**URLs:** Frontend http://localhost:3000 · WP http://localhost:8080 · WP admin http://localhost:8080/wp-admin
-**WP credentials:** User `admin` / Pass `adminadmin123`
+# **URLs:** Frontend http://localhost:3000 · WP http://localhost:8080 · WP admin http://localhost:8080/wp-admin
+# **WP credentials:** User `admin` / Pass `adminadmin123`
 
 ## Installation
 
