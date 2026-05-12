@@ -28,7 +28,7 @@ export default function Header() {
 
   return (
     <header
-      className="relative z-[1] w-full overflow-x-hidden pb-6 md:pb-10"
+      className="relative z-[1] w-full pb-6 md:pb-10"
       style={{
         background:
           'radial-gradient(ellipse 95% 70% at 50% -5%, #e0f2f7 0%, #eef6f9 35%, #f5f5f5 72%, #f5f5f5 100%)',
