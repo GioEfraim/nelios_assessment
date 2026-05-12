@@ -8,7 +8,6 @@
 The repo ships with a pre-populated WordPress database (`wordpress/data.sql`) and media (`wordpress/uploads/`). On the **first** `docker compose up`, MySQL auto-imports the DB and the uploads are bind-mounted into WordPress — no WP installer step is needed.
 
 ```bash
-cp .env.example .env
 docker compose up --build
 ```
 
