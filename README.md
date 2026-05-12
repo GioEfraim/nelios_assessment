@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Nelios assessment — WP + Next.js (Docker)
 
 **URLs:** Frontend http://localhost:3000 · WP http://localhost:8080
@@ -23,3 +24,6 @@ docker compose down -v   # reset: drops MySQL + WP volumes
 - Next.js 15 App Router με Tailwind CSS v4
 - MySQL 8
 - Docker Compose
+=======
+# nelios_assessment
+>>>>>>> 8e76ff2ddc9121b0f5e988852671efa0e2565568
