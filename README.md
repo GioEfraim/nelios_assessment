@@ -1,40 +1,55 @@
-# Nelios assessment — WP + Next.js (Docker)
+# Nelios Assessment — Headless WordPress + Next.js
 
-### **URLs:** Frontend http://localhost:3000 · WP http://localhost:8080 · WP admin http://localhost:8080/wp-admin
-### **WP credentials:** User `admin` / Pass `adminadmin123`
+A headless WordPress + Next.js travel packages listing page, built with Docker.
 
-## Installation
+---
 
-The repo ships with a pre-populated WordPress database (`wordpress/data.sql`) and media (`wordpress/uploads/`). On the **first** `docker compose up`, MySQL auto-imports the DB and the uploads are bind-mounted into WordPress — no WP installer step is needed.
+## URLs
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| WordPress | http://localhost:8080 |
+| WP Admin | http://localhost:8080/wp-admin |
+
+**WP Credentials:** `admin` / `adminadmin123`
+
+---
+
+## Quick Start
+
+The repo ships with a pre-populated database and media — no manual WP setup needed.
 
 ```bash
+# Start
 docker compose up --build
-```
 
-Open http://localhost:3000 (frontend) or http://localhost:8080/wp-admin (login above).
-
-Stop:
-
-```bash
+# Stop
 docker compose down
-```
 
-Full reset (drops DB + WP volumes, re-imports `data.sql` on next up):
-
-```bash
+# Reset (Warning: wipes all data)
 docker compose down -v
 ```
 
-> Note: `data.sql` only runs when the MySQL data volume is **empty** (first boot or after `down -v`). If you already started the stack before this change, run `docker compose down -v` once to trigger the import.
-
-## Project layout
-- `wordpress/plugins/nelios-items` — custom plugin (CPT + REST)
-- `wordpress/data.sql` — seed database dump
-- `wordpress/uploads/` — media library (shipped with the repo)
-- `nextjs/` — Next.js 15 App Router UI
+---
 
 ## Stack
-- WordPress (headless CMS) με custom post type για travel packages
-- Next.js 15 App Router με Tailwind CSS v4
-- MySQL 8
-- Docker Compose
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15 (App Router) |
+| Styling | Tailwind CSS v4 |
+| CMS | WordPress (headless) |
+| Database | MySQL 8 |
+| Infrastructure | Docker Compose |
+
+---
+
+## Features
+
+- Custom post type `nelios_item` with meta fields (price, duration, location, hotel stars)
+- REST API via WordPress (`/wp-json/wp/v2/items`)
+- Filtering by price range, hotel stars, and duration
+- Responsive layout (mobile, tablet, desktop)
+- Empty state when no results match filters
+- Seed data included — works out of the box
