@@ -9,9 +9,17 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').trim();
 }
 
+function formatDaysNights(days: number, nights: number): string {
+  const d = Number.isFinite(days) ? Math.max(0, Math.floor(days)) : 0;
+  const n = Number.isFinite(nights) ? Math.max(0, Math.floor(nights)) : 0;
+  const dayPart = d === 1 ? '1 ημέρα' : `${d} ημέρες`;
+  const nightPart = n === 1 ? '1 νύχτα' : `${n} νύχτες`;
+  return `${dayPart} / ${nightPart}`;
+}
+
 export default function ItemCard({ item }: Props) {
   const { title, meta, featured_image_url } = item;
-  const duration = `${meta.duration_days} ημέρες / ${meta.duration_nights} νύχτα`;
+  const duration = formatDaysNights(meta.duration_days, meta.duration_nights);
   const titlePlain = stripHtml(title.rendered);
   const booking = typeof meta.booking_url === 'string' ? meta.booking_url.trim() : '';
 
