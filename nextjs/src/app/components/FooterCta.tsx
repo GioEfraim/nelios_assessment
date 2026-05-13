@@ -12,10 +12,6 @@ export default function FooterCta({ data }: Props) {
 
   return (
     <section className="relative z-[1] mt-[6rem] md:mt-[10rem] mb-[10rem] w-full px-4">
-      {/*
-        Mobile: 328 × 492. Desktop: full width × taller frame (580px) so more vertical scene;
-        object-cover + object-top favours the upper part of the photo (e.g. trees).
-      */}
       <div className="relative mx-auto w-full max-w-[1320px] overflow-hidden rounded-xl bg-nelios-black shadow-[0_8px_30px_rgba(15,23,42,0.12)] max-md:h-[492px] max-md:w-[328px] max-md:max-w-full max-md:rounded-[12px] md:h-[580px]">
         <img
           src={image_url}
@@ -24,7 +20,7 @@ export default function FooterCta({ data }: Props) {
           loading="lazy"
           decoding="async"
         />
-        {/* Light wash — Figma feels bright; keep only a soft bottom read for white type */}
+        
         <div
           className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent opacity-100"
           aria-hidden

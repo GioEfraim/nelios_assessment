@@ -28,7 +28,6 @@ export default function ItemCard({ item }: Props) {
       className="mx-auto flex h-[479px] w-[312px] max-w-full flex-col overflow-hidden rounded-[12px] border bg-[rgba(255,255,255,0.88)] shadow-[0px_24px_32px_-12px_#0000001A] backdrop-blur-[32px] transition-shadow duration-200"
       style={{ borderColor: 'var(--nelios-stroke)' }}
     >
-      {/* Featured image — 312 wide; 275px tall so details can fit 3-line title (275+204=479) */}
       <div className="relative h-[275px] w-full max-w-[312px] shrink-0 overflow-hidden rounded-t-[12px]">
         {featured_image_url ? (
           <img
@@ -46,7 +45,6 @@ export default function ItemCard({ item }: Props) {
         )}
       </div>
 
-      {/* Details — padding 20/24/24/24, gap 8px; 204px height for 3-line title + price row */}
       <div className="box-border flex h-[204px] w-full max-w-[312px] shrink-0 flex-col gap-2 pt-5 px-6 pb-6">
         <p className="nelios-small-12 shrink-0 text-nelios-gray">{duration}</p>
 
@@ -62,21 +60,13 @@ export default function ItemCard({ item }: Props) {
             <span className="nelios-small-12 uppercase text-nelios-gray">από </span>
             <span className="nelios-text-16-bold text-nelios-black">{meta.price}€</span>
           </div>
-          {/* booking_url is optional in WP — no link means disabled CTA */}
-          {booking ? (
-            <a
-              href={booking}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nelios-btn-primary shrink-0 px-4 py-2 no-underline"
-            >
-              Κράτηση
-            </a>
-          ) : (
-            <button type="button" className="nelios-btn-primary shrink-0 px-4 py-2 opacity-60" disabled>
-              Κράτηση
-            </button>
-          )}
+          <button
+            type="button"
+            className={`nelios-btn-primary shrink-0 px-4 py-2${booking ? '' : ' opacity-60'}`}
+            disabled={!booking}
+          >
+            Κράτηση
+          </button>
         </div>
       </div>
     </article>
