@@ -110,13 +110,6 @@ export default function ItemsSection({ initialItems }: Props) {
     setSelectedNights([]);
   }, [sliderMax]);
 
-  const resetDraftFilters = useCallback(() => {
-    setDraftMin(0);
-    setDraftMax(sliderMax);
-    setDraftStars([]);
-    setDraftNights([]);
-  }, [sliderMax]);
-
   const handleStarsChange = (star: number) => {
     setSelectedStars((prev) =>
       prev.includes(star) ? prev.filter((s) => s !== star) : [...prev, star]
@@ -283,7 +276,6 @@ export default function ItemsSection({ initialItems }: Props) {
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
         onApply={applySheet}
-        onResetAll={resetDraftFilters}
       >
         <Filters
           formId="sheet"

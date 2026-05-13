@@ -1,6 +1,6 @@
 'use client';
 
-// Histogram + two stacked range inputs (cheap dual-thumb). Parent owns min/max state.
+// Histogram + dual-thumb range (same single track on all breakpoints).
 
 type Props = {
   sliderMin: number;
@@ -30,10 +30,13 @@ export default function PriceHistogramSlider({
   const clampMax = (v: number) =>
     Math.min(sliderMax, Math.max(v, valueMin + 1));
 
+  const applyMin = (raw: number) => onChangeMin(clampMin(raw));
+  const applyMax = (raw: number) => onChangeMax(clampMax(raw));
+
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 max-w-full space-y-2">
       {/* Bar chart: buckets light up when they fall inside the selected price window */}
-      <div className="flex h-16 items-end gap-px px-0.5">
+      <div className="flex h-16 min-w-0 w-full max-w-full items-end gap-px px-0.5">
         {histogram.map((count, i) => {
           const bucketStart = sliderMin + (i / n) * span;
           const bucketEnd = sliderMin + ((i + 1) / n) * span;
@@ -54,8 +57,8 @@ export default function PriceHistogramSlider({
         })}
       </div>
 
-      {/* Track + filled segment are purely visual; the two ranges sit on top */}
-      <div className="relative h-10">
+      {/* One track, two thumbs (Από/Έως number fields help when thumbs overlap on touch). */}
+      <div className="relative h-10 min-w-0 w-full max-w-full touch-pan-x">
         <div
           className="pointer-events-none absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full"
           style={{ background: 'rgba(0, 185, 242, 0.22)' }}
@@ -72,11 +75,9 @@ export default function PriceHistogramSlider({
           min={sliderMin}
           max={clampMax(valueMax)}
           value={valueMin}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            onChangeMin(clampMin(v));
-          }}
-          className="nelios-range nelios-range-dual absolute z-[2] h-6 w-full cursor-pointer"
+          onInput={(e) => applyMin(Number((e.target as HTMLInputElement).value))}
+          onChange={(e) => applyMin(Number(e.target.value))}
+          className="nelios-range nelios-range-dual nelios-range-dual-min absolute z-[2] box-border h-6 w-full max-w-full min-w-0 cursor-pointer"
           style={{ top: '50%', transform: 'translateY(-50%)' }}
         />
         <input
@@ -84,11 +85,9 @@ export default function PriceHistogramSlider({
           min={clampMin(valueMin)}
           max={sliderMax}
           value={valueMax}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            onChangeMax(clampMax(v));
-          }}
-          className="nelios-range nelios-range-dual absolute z-[3] h-6 w-full cursor-pointer"
+          onInput={(e) => applyMax(Number((e.target as HTMLInputElement).value))}
+          onChange={(e) => applyMax(Number(e.target.value))}
+          className="nelios-range nelios-range-dual nelios-range-dual-max absolute z-[3] box-border h-6 w-full max-w-full min-w-0 cursor-pointer"
           style={{ top: '50%', transform: 'translateY(-50%)' }}
         />
       </div>

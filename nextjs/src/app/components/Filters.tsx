@@ -47,7 +47,7 @@ export default function Filters({
 }: Props) {
   return (
     <div
-      className="w-full rounded-[10px] bg-nelios-white p-5 shadow-sm"
+      className="box-border w-full min-w-0 max-w-full rounded-[10px] bg-nelios-white p-5 shadow-sm"
       style={{ boxShadow: '0 1px 3px var(--nelios-stroke)' }}
     >
       {showMainTitle && (
@@ -69,37 +69,39 @@ export default function Filters({
       )}
 
       {/* --- Price --- */}
-      <p className="nelios-small-12 mb-3 uppercase tracking-wider text-nelios-gray">Εύρος τιμής</p>
+      <p className="nelios-small-12 mb-3 font-semibold uppercase tracking-wider text-nelios-pure-black">
+        Εύρος τιμής
+      </p>
 
-      <div className="mb-3 flex gap-2">
-        <div className="flex-1">
+      <div className="mb-3 flex min-w-0 gap-2">
+        <div className="min-w-0 flex-1">
           <label className="nelios-small-12 mb-1 block text-nelios-gray">Από</label>
           <div
-            className="flex items-center rounded-md border px-2 py-2"
+            className="flex min-w-0 items-center rounded-md border px-2 py-2"
             style={{ borderColor: 'var(--nelios-field-border)' }}
           >
-            <span className="nelios-field-14 mr-1 text-nelios-gray">€</span>
+            <span className="nelios-field-14 mr-1 shrink-0 text-nelios-gray">€</span>
             <input
               type="number"
               value={priceMin}
               onChange={(e) => onPriceMinChange(Number(e.target.value))}
-              className="nelios-field-14 w-full min-w-0 border-0 bg-transparent p-0 text-nelios-black outline-none"
+              className="nelios-field-14 min-w-0 flex-1 border-0 bg-transparent p-0 text-nelios-black outline-none"
               min={sliderMin}
             />
           </div>
         </div>
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <label className="nelios-small-12 mb-1 block text-nelios-gray">Έως</label>
           <div
-            className="flex items-center rounded-md border px-2 py-2"
+            className="flex min-w-0 items-center rounded-md border px-2 py-2"
             style={{ borderColor: 'var(--nelios-field-border)' }}
           >
-            <span className="nelios-field-14 mr-1 text-nelios-gray">€</span>
+            <span className="nelios-field-14 mr-1 shrink-0 text-nelios-gray">€</span>
             <input
               type="number"
               value={priceMax}
               onChange={(e) => onPriceMaxChange(Number(e.target.value))}
-              className="nelios-field-14 w-full min-w-0 border-0 bg-transparent p-0 text-nelios-black outline-none"
+              className="nelios-field-14 min-w-0 flex-1 border-0 bg-transparent p-0 text-nelios-black outline-none"
             />
           </div>
         </div>

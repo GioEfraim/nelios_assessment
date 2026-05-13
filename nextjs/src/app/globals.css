@@ -10,6 +10,7 @@
   --nelios-black: #555563;
   --nelios-pure-black: #000000;
   --nelios-translucent-bg: rgba(255, 255, 255, 0.8);
+  --translucent-bg: #ffffffcc;
   --nelios-bg-50: rgba(255, 255, 255, 0.5);
   --nelios-stroke: rgba(0, 0, 0, 0.1);
   --nelios-text-on-image: #ffffff;
@@ -237,6 +238,16 @@ input[type="range"].nelios-range-dual::-webkit-slider-runnable-track {
 }
 input[type="range"].nelios-range-dual::-moz-range-track {
   background: transparent;
+}
+
+/* Bring the thumb being dragged above its sibling on touch devices */
+input[type="range"].nelios-range-dual-min:focus,
+input[type="range"].nelios-range-dual-min:active {
+  z-index: 10;
+}
+input[type="range"].nelios-range-dual-max:focus,
+input[type="range"].nelios-range-dual-max:active {
+  z-index: 10;
 }
 
 /* Radio / checkbox accent */
